@@ -7,3 +7,7 @@ In this calculator Hub All types of bank calculators are available most of EmI c
 
 https://github.com/user-attachments/assets/4a9f698f-f386-4a92-bb05-a83f4dd063ca
 
+
+https://github.com/user-attachments/assets/82c79bc0-f60e-4778-8420-7d3ec8ed843a
+
+
