@@ -1,0 +1,646 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Smart Calculator Hub</title>
+    <link rel="icon" type="image/png" href="budget.png">
+
+    <STYle>
+        /* Reset some basic defaults */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.6;
+            background: #f9f9f9;
+            color: #333;
+        }
+
+        a {
+            text-decoration: none;
+            color: #333;
+        }
+
+        /* Container */
+        .container {
+            width: 90%;
+            max-width: 1100px;
+            margin: auto;
+        }
+
+        /* Header */
+        .header {
+            background: #57eeff;
+            padding: 20px 0;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+            position: sticky;
+            top: 0;
+            z-index: 999;
+        }
+
+        .logo {
+            font-size: 24px;
+            font-weight: bold;
+            color: #007bff;
+            margin-left: -8px;
+        }
+
+        .nav {
+            margin-top: 10px;
+        }
+
+        .nav a {
+            margin: 0 15px;
+            font-weight: 500;
+            transition: color 0.3s ease;
+        }
+
+        /* Active animated underline */
+        .nav a.active {
+            position: relative;
+            color: #007bff;
+            font-weight: bold;
+        }
+
+        /* Animated underline effect */
+        .nav a.active::after {
+            content: '';
+            position: absolute;
+            left: 0;
+            bottom: -5px;
+            width: 100%;
+            height: 3px;
+            background-color: #007bff;
+            border-radius: 2px;
+            animation: underlineSlide 0.4s ease-in-out;
+        }
+
+        @media (max-width: 768px) {
+            .nav {
+                top: 77px;
+                position: absolute;
+                top: 70px;
+                left: 0;
+                width: 100%;
+                background: white;
+                flex-direction: column;
+                display: none;
+                border-top: 1px solid #eee;
+                z-index: 999;
+                transition: background 0.3s ease;
+            }
+
+            .nav.show {
+                display: flex;
+                background: white;
+                /* Menu background stays white */
+            }
+
+            .nav a {
+                padding: 15px;
+                text-align: center;
+                background: rgb(231, 231, 231);
+                /* Default background for all links */
+                color: #007bff;
+                /* Blue text */
+                /* border-bottom: 1px solid #000000; */
+                border: 1px solid rgb(111, 111, 111);
+                font-weight: 500;
+                border-radius: 12px;
+                margin-top: 2px;
+                transition: background 0.3s ease, color 0.3s ease;
+            }
+
+            .nav a:hover {
+                background: #f0f0f0;
+            }
+
+            .nav a.active {
+                background: #007bff;
+                /* Active: blue background */
+                color: white;
+                /* Active: white text */
+                font-weight: bold;
+            }
+
+            .nav a::after {
+                display: none;
+            }
+        }
+
+
+        .nav a:hover::after {
+            width: 100%;
+        }
+
+
+        .nav a:hover {
+            color: #007bff;
+        }
+
+        /* Main */
+        .main {
+            padding: 40px 0;
+            text-align: center;
+        }
+
+        .hero h2 {
+            font-size: 2rem;
+            margin-bottom: 10px;
+        }
+
+        .hero p {
+            font-size: 1.1rem;
+            color: #555;
+        }
+
+        /* Cards Section */
+        .cards-section {
+            margin-top: 40px;
+        }
+
+        .card-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+            gap: 20px;
+            padding: 20px;
+        }
+
+        .card {
+            background: white;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.06);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            cursor: pointer;
+        }
+
+        .card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 12px 24px rgba(0, 0, 0, 0.15);
+        }
+
+        /* Footer */
+        .footer {
+            background: #c4f7ff;
+            text-align: center;
+            padding: 20px 0;
+            border-top: 1px solid #eee;
+            margin-top: 50px;
+            font-size: 18px;
+            color: #777;
+        }
+
+        /* Responsive nav - optional */
+        @media (min-width: 768px) {
+            .container {
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
+            }
+
+            .nav {
+                margin-top: 0;
+                font-size: 20px;
+            }
+        }
+
+        /* Hamburger styles */
+        .hamburger {
+            width: 30px;
+            height: 25px;
+            display: none;
+            flex-direction: column;
+            justify-content: space-between;
+            cursor: pointer;
+            z-index: 1001;
+        }
+
+        .hamburger span {
+            display: block;
+            height: 4px;
+            width: 100%;
+            background: #007bff;
+            border-radius: 4px;
+            transition: all 0.4s ease;
+        }
+
+        /* Active hamburger transforms */
+        .hamburger.active span:nth-child(1) {
+            transform: rotate(45deg) translateY(10px);
+        }
+
+        .hamburger.active span:nth-child(2) {
+            opacity: 0;
+        }
+
+        .hamburger.active span:nth-child(3) {
+            transform: rotate(-45deg) translateY(-10px);
+        }
+
+        /* Responsive Nav */
+        @media (max-width: 768px) {
+            .nav {
+                position: absolute;
+                top: 70px;
+                left: 0;
+                width: 100%;
+                background: white;
+                flex-direction: column;
+                display: none;
+                border-top: 1px solid #eee;
+
+            }
+
+            .nav.show {
+                display: flex;
+                animation: slideDown 0.3s ease forwards;
+            }
+
+            .nav a {
+                padding: 15px;
+                text-align: center;
+                border-bottom: 1px solid #f1f1f1;
+            }
+
+            .hamburger {
+                display: flex;
+            }
+
+            @keyframes slideDown {
+                from {
+                    opacity: 0;
+                    transform: translateY(-10px);
+                }
+
+                to {
+                    opacity: 1;
+                    transform: translateY(0);
+                }
+            }
+        }
+
+        /* Ensure the container uses flex layout */
+        .container {
+            width: 90%;
+            max-width: 1100px;
+            margin: auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        /* New wrapper to hold nav + hamburger on the right */
+        .right-menu {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+        }
+
+        /* Optional tweak for nav items spacing */
+        .nav a {
+            margin: 0 10px;
+        }
+
+        .footer {
+            background: #fff;
+            padding: 40px 20px 10px;
+            border-top: 1px solid #eee;
+            margin-top: 60px;
+            font-size: 14px;
+            color: #444;
+        }
+
+        .footer-content {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 30px;
+            justify-content: space-between;
+        }
+
+        .footer-box {
+            flex: 1 1 158px;
+        }
+
+        .footer-box h3,
+        .footer-box h4 {
+            color: #007bff;
+            margin-bottom: 15px;
+        }
+
+        .footer-box p,
+        .footer-box ul li {
+            margin-bottom: 10px;
+            color: #555;
+        }
+
+        .footer-box ul {
+            list-style: none;
+            padding: 0;
+        }
+
+        .footer-box ul li a {
+            color: #007bff;
+            text-decoration: none;
+            transition: 0.3s;
+        }
+
+        .footer-box ul li a:hover {
+            text-decoration: underline;
+        }
+
+        .footer-bottom {
+            text-align: center;
+            margin-top: 30px;
+            font-size: 13px;
+            color: #777;
+            border-top: 1px solid #eee;
+            padding-top: 15px;
+        }
+
+        /* Responsive Footer */
+        @media (max-width: 768px) {
+            .footer-content {
+                flex-direction: column;
+                text-align: center;
+            }
+
+            .footer-box {
+                margin-bottom: -11px;
+            }
+        }
+    </STYle>
+
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f8f9fa;
+            color: #333;
+        }
+
+        .calculator-section {
+            background-color: #ffffff;
+            padding: 40px 20px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+        }
+
+        .calculator-container {
+            max-width: 1000px;
+            margin: auto;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 40px;
+            justify-content: center;
+        }
+
+        .calculator-form,
+        .calculator-summary {
+            flex: 1 1 195px;
+          min-width: 344px;
+            background: #fff6fa;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+        }
+
+        .calculator-form h2,
+        .calculator-summary h2 {
+            color: #800040;
+            margin-bottom: 20px;
+        }
+
+        label {
+            display: block;
+            margin-top: 15px;
+        }
+
+        input {
+            width: 100%;
+            padding: 10px;
+            margin-top: 5px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+        }
+
+        .result-box {
+            background: #e3e1f5;
+            margin-top: 20px;
+            padding: 15px;
+            border-radius: 10px;
+            text-align: center;
+            font-size: 24px;
+            font-weight: bold;
+            color: #800040;
+        }
+
+        .description-section {
+            background: #f1f3f5;
+            padding: 50px 20px;
+            text-align: center;
+        }
+
+        .description-section h2 {
+            color: #5b004e;
+            margin-bottom: 20px;
+        }
+
+        .features-list {
+            text-align: left;
+            max-width: 800px;
+            margin: auto;
+            line-height: 1.8;
+            padding-left: 105px;
+        }
+
+        .features-list li {
+            margin-bottom: 10px;
+        }
+
+        .schedule-table {
+            width: 100%;
+            margin-top: 30px;
+            border-collapse: collapse;
+        }
+
+        .schedule-table th,
+        .schedule-table td {
+            border: 1px solid #ccc;
+            padding: 8px;
+            text-align: center;
+        }
+
+        .schedule-table th {
+            background-color: #800040;
+            color: white;
+        }
+
+        @media (max-width: 768px) {
+            .calculator-container {
+                flex-direction: column;
+                align-items: center;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <header class="header">
+        <div class="container">
+            <h1 class="logo">💡Calculator Hub</h1>
+
+            <!-- Add this wrapper div to align nav + hamburger right -->
+            <div class="right-menu">
+                <nav class="nav" id="navbar">
+                    <a href="INDEX.HTML" class="active">Home</a>
+                    <a href="terms.html">Terms</a>
+                    <a href="about.html">About</a>
+                    <a href="contact.html">Contact</a>
+                </nav>
+
+                <!-- Hamburger Button -->
+                <div class="hamburger" id="hamburger">
+                    <span></span>
+                    <span></span>
+                    <span></span>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <section class="calculator-section">
+        <div class="calculator-container">
+            <div class="calculator-form">
+                <h2>Home Loan EMI Calculator</h2>
+                <label>Loan Amount (₹)</label>
+                <input type="number" id="loan" value="300000">
+
+                <label>Interest Rate (p.a)</label>
+                <input type="number" id="rate" value="9.75">
+
+                <label>Tenure (months)</label>
+                <input type="number" id="tenure" value="12">
+
+                <div class="result-box" id="emiResult">₹ 0</div>
+                <button onclick="calculateEMI()"
+                    style="margin-top: 15px; padding: 10px; width: 100%; background-color: #800040; color: white; border: none; border-radius: 5px; font-weight: bold; cursor: pointer;">Calculate
+                    EMI</button>
+            </div>
+
+            <div class="calculator-summary">
+                <h2>Payment Breakdown</h2>
+                <p><strong>Principal:</strong> ₹ <span id="principalAmount">0</span></p>
+                <p><strong>Interest:</strong> ₹ <span id="interestAmount">0</span></p>
+                <p><strong>Total Payable:</strong> ₹ <span id="totalPayable">0</span></p>
+
+                <table class="schedule-table" id="schedule"></table>
+            </div>
+        </div>
+    </section>
+
+    <section class="description-section">
+        <h2>About Home Loan EMI</h2>
+        <p style="max-width: 800px; margin: auto;padding-left: 26px;
+    padding-right: 26px;">Home Loan EMI is the monthly installment you pay to the lender for
+            your home loan. It includes a portion of the principal and interest. Our calculator helps you estimate the
+            EMI amount so you can manage your finances efficiently before taking a home loan.</p>
+
+        <h2 style="margin-top: 40px; margin: auto;">Features & Benefits</h2>
+        <ul class="features-list">
+            <li>✅ Easy estimation of monthly outgo</li>
+            <li>✅ Better financial planning</li>
+            <li>✅ Helps compare different loan options</li>
+            <li>✅ Saves time with instant results</li>
+        </ul>
+    </section>
+
+    <script>
+        function calculateEMI() {
+            const principal = parseFloat(document.getElementById('loan').value);
+            const rate = parseFloat(document.getElementById('rate').value) / 12 / 100;
+            const tenure = parseInt(document.getElementById('tenure').value);
+
+            const emi = (principal * rate * Math.pow(1 + rate, tenure)) / (Math.pow(1 + rate, tenure) - 1);
+            const totalPayable = emi * tenure;
+            const interest = totalPayable - principal;
+
+            document.getElementById('emiResult').innerText = `₹ ${emi.toFixed(0)}`;
+            document.getElementById('principalAmount').innerText = principal.toLocaleString();
+            document.getElementById('interestAmount').innerText = interest.toFixed(0);
+            document.getElementById('totalPayable').innerText = totalPayable.toFixed(0);
+
+            let scheduleHTML = '<tr><th>Month</th><th>EMI</th><th>Interest</th><th>Principal</th><th>Balance</th></tr>';
+            let balance = principal;
+
+            for (let i = 1; i <= tenure; i++) {
+                const interestComponent = balance * rate;
+                const principalComponent = emi - interestComponent;
+                balance -= principalComponent;
+
+                scheduleHTML += `<tr><td>${i}</td><td>₹${emi.toFixed(0)}</td><td>₹${interestComponent.toFixed(0)}</td><td>₹${principalComponent.toFixed(0)}</td><td>₹${balance > 0 ? balance.toFixed(0) : 0}</td></tr>`;
+            }
+
+            document.getElementById('schedule').innerHTML = scheduleHTML;
+        }
+    </script>
+
+
+    <footer class="footer">
+        <div class="container footer-content">
+            <div class="footer-box">
+                <h3>Smart Calculator Hub</h3>
+                <p>Helping you make smarter financial decisions with quick and easy-to-use calculators.</p>
+                <p>Designed By Debananda Kuanr</p>
+            </div>
+
+            <div class="footer-box">
+                <h4>Quick Links</h4>
+                <ul>
+                    <li><a href="INDEX.HTML">Home</a></li>
+                    <li><a href="terms.html">Terms</a></li>
+                    <li><a href="about.html">About</a></li>
+                    <li><a href="contact.html">Contact</a></li>
+                </ul>
+            </div>
+
+            <div class="footer-box">
+                <h4>Contact Us</h4>
+                <ul>
+                    <li>Email: <a
+                            href="mailto:debanandakuanr453@gmail.com?subject=Hello&body=I%20wanted%20to%20reach%20out%20to%20you.">calculatorsupport@gmail.com</a>
+                    </li>
+                    <li>Phone:<a
+                            href="sms:9439204006?body=Hello%2C%20I%20wanted%20to%20contact%20you.">+91-9568-257-874</a>
+                    </li>
+                    <li>Location: Odisha, India</li>
+                </ul>
+            </div>
+        </div>
+
+        <div class="footer-bottom">
+            <p>&copy; 2025 Smart Calculator Hub. All rights reserved.</p>
+        </div>
+    </footer>
+
+    <script>
+        const hamburger = document.getElementById("hamburger");
+        const navbar = document.getElementById("navbar");
+
+        hamburger.addEventListener("click", () => {
+            hamburger.classList.toggle("active");
+            navbar.classList.toggle("show");
+        });
+    </script>
+
+
+</body>
+
+</html>

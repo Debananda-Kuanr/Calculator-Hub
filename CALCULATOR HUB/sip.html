@@ -1,0 +1,598 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Smart Calculator Hub</title>
+    <link rel="icon" type="image/png" href="budget.png">
+
+    <STYle>
+        /* Reset some basic defaults */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.6;
+            background: #f9f9f9;
+            color: #333;
+        }
+
+        a {
+            text-decoration: none;
+            color: #333;
+        }
+
+        /* Container */
+        .container {
+            width: 90%;
+            max-width: 1100px;
+            margin: auto;
+        }
+
+        /* Header */
+        .header {
+            background: #57eeff;
+            padding: 20px 0;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+            position: sticky;
+            top: 0;
+            z-index: 999;
+        }
+
+        .logo {
+            font-size: 24px;
+            font-weight: bold;
+            color: #007bff;
+            margin-left: -8px;
+        }
+
+        .nav {
+            margin-top: 10px;
+        }
+
+        .nav a {
+            margin: 0 15px;
+            font-weight: 500;
+            transition: color 0.3s ease;
+        }
+
+        /* Active animated underline */
+        .nav a.active {
+            position: relative;
+            color: #007bff;
+            font-weight: bold;
+        }
+
+        /* Animated underline effect */
+        .nav a.active::after {
+            content: '';
+            position: absolute;
+            left: 0;
+            bottom: -5px;
+            width: 100%;
+            height: 3px;
+            background-color: #007bff;
+            border-radius: 2px;
+            animation: underlineSlide 0.4s ease-in-out;
+        }
+
+        @media (max-width: 768px) {
+            .nav {
+                top: 77px;
+                position: absolute;
+                top: 70px;
+                left: 0;
+                width: 100%;
+                background: white;
+                flex-direction: column;
+                display: none;
+                border-top: 1px solid #eee;
+                z-index: 999;
+                transition: background 0.3s ease;
+            }
+
+            .nav.show {
+                display: flex;
+                background: white;
+                /* Menu background stays white */
+            }
+
+            .nav a {
+                padding: 15px;
+                text-align: center;
+                background: rgb(231, 231, 231);
+                /* Default background for all links */
+                color: #007bff;
+                /* Blue text */
+                /* border-bottom: 1px solid #000000; */
+                border: 1px solid rgb(111, 111, 111);
+                font-weight: 500;
+                border-radius: 12px;
+                margin-top: 2px;
+                transition: background 0.3s ease, color 0.3s ease;
+            }
+
+            .nav a:hover {
+                background: #f0f0f0;
+            }
+
+            .nav a.active {
+                background: #007bff;
+                /* Active: blue background */
+                color: white;
+                /* Active: white text */
+                font-weight: bold;
+            }
+
+            .nav a::after {
+                display: none;
+            }
+        }
+
+
+        .nav a:hover::after {
+            width: 100%;
+        }
+
+
+        .nav a:hover {
+            color: #007bff;
+        }
+
+        /* Main */
+        .main {
+            padding: 40px 0;
+            text-align: center;
+        }
+
+        .hero h2 {
+            font-size: 2rem;
+            margin-bottom: 10px;
+        }
+
+        .hero p {
+            font-size: 1.1rem;
+            color: #555;
+        }
+
+        /* Cards Section */
+        .cards-section {
+            margin-top: 40px;
+        }
+
+        .card-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+            gap: 20px;
+            padding: 20px;
+        }
+
+        .card {
+            background: white;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.06);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            cursor: pointer;
+        }
+
+        .card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 12px 24px rgba(0, 0, 0, 0.15);
+        }
+
+        /* Footer */
+        .footer {
+            background: #c4f7ff;
+            text-align: center;
+            padding: 20px 0;
+            border-top: 1px solid #eee;
+            margin-top: 50px;
+            font-size: 18px;
+            color: #777;
+        }
+
+        /* Responsive nav - optional */
+        @media (min-width: 768px) {
+            .container {
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
+            }
+
+            .nav {
+                margin-top: 0;
+                font-size: 20px;
+            }
+        }
+
+        /* Hamburger styles */
+        .hamburger {
+            width: 30px;
+            height: 25px;
+            display: none;
+            flex-direction: column;
+            justify-content: space-between;
+            cursor: pointer;
+            z-index: 1001;
+        }
+
+        .hamburger span {
+            display: block;
+            height: 4px;
+            width: 100%;
+            background: #007bff;
+            border-radius: 4px;
+            transition: all 0.4s ease;
+        }
+
+        /* Active hamburger transforms */
+        .hamburger.active span:nth-child(1) {
+            transform: rotate(45deg) translateY(10px);
+        }
+
+        .hamburger.active span:nth-child(2) {
+            opacity: 0;
+        }
+
+        .hamburger.active span:nth-child(3) {
+            transform: rotate(-45deg) translateY(-10px);
+        }
+
+        /* Responsive Nav */
+        @media (max-width: 768px) {
+            .nav {
+                position: absolute;
+                top: 70px;
+                left: 0;
+                width: 100%;
+                background: white;
+                flex-direction: column;
+                display: none;
+                border-top: 1px solid #eee;
+
+            }
+
+            .nav.show {
+                display: flex;
+                animation: slideDown 0.3s ease forwards;
+            }
+
+            .nav a {
+                padding: 15px;
+                text-align: center;
+                border-bottom: 1px solid #f1f1f1;
+            }
+
+            .hamburger {
+                display: flex;
+            }
+
+            @keyframes slideDown {
+                from {
+                    opacity: 0;
+                    transform: translateY(-10px);
+                }
+
+                to {
+                    opacity: 1;
+                    transform: translateY(0);
+                }
+            }
+        }
+
+        /* Ensure the container uses flex layout */
+        .container {
+            width: 90%;
+            max-width: 1100px;
+            margin: auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        /* New wrapper to hold nav + hamburger on the right */
+        .right-menu {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+        }
+
+        /* Optional tweak for nav items spacing */
+        .nav a {
+            margin: 0 10px;
+        }
+
+        .footer {
+            background: #fff;
+            padding: 40px 20px 10px;
+            border-top: 1px solid #eee;
+            margin-top: 60px;
+            font-size: 14px;
+            color: #444;
+        }
+
+        .footer-content {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 30px;
+            justify-content: space-between;
+        }
+
+        .footer-box {
+            flex: 1 1 158px;
+        }
+
+        .footer-box h3,
+        .footer-box h4 {
+            color: #007bff;
+            margin-bottom: 15px;
+        }
+
+        .footer-box p,
+        .footer-box ul li {
+            margin-bottom: 10px;
+            color: #555;
+        }
+
+        .footer-box ul {
+            list-style: none;
+            padding: 0;
+        }
+
+        .footer-box ul li a {
+            color: #007bff;
+            text-decoration: none;
+            transition: 0.3s;
+        }
+
+        .footer-box ul li a:hover {
+            text-decoration: underline;
+        }
+
+        .footer-bottom {
+            text-align: center;
+            margin-top: 30px;
+            font-size: 13px;
+            color: #777;
+            border-top: 1px solid #eee;
+            padding-top: 15px;
+        }
+
+        /* Responsive Footer */
+        @media (max-width: 768px) {
+            .footer-content {
+                flex-direction: column;
+                text-align: center;
+            }
+
+            .footer-box {
+                margin-bottom: -11px;
+            }
+        }
+
+
+        .sip-calculator {
+            padding: 30px;
+            background: #f4f7fc;
+            font-family: 'Segoe UI', sans-serif;
+        }
+
+        .sip-container {
+            max-width: 1000px;
+            margin: auto;
+            background: white;
+            border-radius: 10px;
+            display: flex;
+            flex-wrap: wrap;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+
+        .sip-left,
+        .sip-right {
+            flex: 1 1 300px;
+            padding: 30px;
+        }
+
+        .sip-left label {
+            display: block;
+            margin-top: 20px;
+            font-weight: bold;
+            color: #333;
+        }
+
+        .sip-left input {
+            width: 100%;
+            padding: 10px;
+            margin-top: 5px;
+            border-radius: 5px;
+            border: 1px solid #ccc;
+        }
+
+        .sip-buttons {
+            margin-top: 25px;
+        }
+
+        .sip-buttons button {
+            padding: 10px 20px;
+            margin-right: 10px;
+            border: none;
+            background: #007bff;
+            color: white;
+            font-weight: bold;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+
+        .sip-buttons button:last-child {
+            background: #dc3545;
+        }
+
+        .sip-right h3 {
+            color: #333;
+            margin-bottom: 20px;
+        }
+
+        #sipResult {
+            background: #a94467;
+            color: white;
+            font-size: 2rem;
+            padding: 30px;
+            border-radius: 10px;
+            text-align: center;
+            font-weight: bold;
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .sip-container {
+                flex-direction: column;
+            }
+        }
+    </STYle>
+</head>
+
+<body>
+
+    <header class="header">
+        <div class="container">
+            <h1 class="logo">💡Calculator Hub</h1>
+
+            <!-- Add this wrapper div to align nav + hamburger right -->
+            <div class="right-menu">
+                <nav class="nav" id="navbar">
+                    <a href="INDEX.HTML" class="active">Home</a>
+                    <a href="terms.html">Terms</a>
+                    <a href="about.html">About</a>
+                    <a href="contact.html">Contact</a>
+                </nav>
+
+                <!-- Hamburger Button -->
+                <div class="hamburger" id="hamburger">
+                    <span></span>
+                    <span></span>
+                    <span></span>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <section class="sip-calculator">
+        <div class="sip-container">
+            <div class="sip-left">
+                <h2>SIP Calculator</h2>
+                <label>I need ₹</label>
+                <input type="number" id="goalAmount" placeholder="E.g. 500000">
+
+                <label>Number of Years</label>
+                <input type="number" id="years" placeholder="E.g. 10">
+
+                <label>Expected Return (in %)</label>
+                <input type="number" id="returnRate" placeholder="E.g. 12">
+
+                <div class="sip-buttons">
+                    <button onclick="calculateSIP()">Calculate</button>
+                    <button onclick="resetForm()">Reset</button>
+                </div>
+            </div>
+
+            <div class="sip-right">
+                <h3>Monthly SIP Amount</h3>
+                <div id="sipResult">₹ 0.00</div>
+                <div class="sip-insight-box">
+  <h4>Why SIP is Smart</h4>
+  <ul>
+    <li>✅ Builds long-term wealth</li>
+    <li>✅ Reduces market risk with rupee cost averaging</li>
+    <li>✅ Starts with small amounts</li>
+    <li>✅ Compound interest helps grow money faster</li>
+  </ul>
+</div>
+            </div>
+        </div>
+    </section>
+
+
+    <footer class="footer">
+        <div class="container footer-content">
+            <div class="footer-box">
+                <h3>Smart Calculator Hub</h3>
+                <p>Helping you make smarter financial decisions with quick and easy-to-use calculators.</p>
+                <p>Designed By Debananda Kuanr</p>
+            </div>
+
+            <div class="footer-box">
+                <h4>Quick Links</h4>
+                <ul>
+                    <li><a href="INDEX.HTML">Home</a></li>
+                    <li><a href="terms.html">Terms</a></li>
+                    <li><a href="about.html">About</a></li>
+                    <li><a href="contact.html">Contact</a></li>
+                </ul>
+            </div>
+
+            <div class="footer-box">
+                <h4>Contact Us</h4>
+                <ul>
+                    <li>Email: <a
+                            href="mailto:debanandakuanr453@gmail.com?subject=Hello&body=I%20wanted%20to%20reach%20out%20to%20you.">calculatorsupport@gmail.com</a>
+                    </li>
+                    <li>Phone:<a
+                            href="sms:9439204006?body=Hello%2C%20I%20wanted%20to%20contact%20you.">+91-9568-257-874</a>
+                    </li>
+                    <li>Location: Odisha, India</li>
+                </ul>
+            </div>
+        </div>
+
+        <div class="footer-bottom">
+            <p>&copy; 2025 Smart Calculator Hub. All rights reserved.</p>
+        </div>
+    </footer>
+
+    <script>
+        const hamburger = document.getElementById("hamburger");
+        const navbar = document.getElementById("navbar");
+
+        hamburger.addEventListener("click", () => {
+            hamburger.classList.toggle("active");
+            navbar.classList.toggle("show");
+        });
+    </script>
+
+    <script>
+        function calculateSIP() {
+            const goal = parseFloat(document.getElementById("goalAmount").value);
+            const years = parseFloat(document.getElementById("years").value);
+            const rate = parseFloat(document.getElementById("returnRate").value);
+
+            if (!goal || !years || !rate) {
+                alert("Please enter all fields!");
+                return;
+            }
+
+            const monthlyRate = rate / 12 / 100;
+            const months = years * 12;
+
+            const sip = (goal * monthlyRate) / (Math.pow(1 + monthlyRate, months) - 1);
+
+            document.getElementById("sipResult").textContent = `₹ ${sip.toFixed(2)}`;
+        }
+
+        function resetForm() {
+            document.getElementById("goalAmount").value = '';
+            document.getElementById("years").value = '';
+            document.getElementById("returnRate").value = '';
+            document.getElementById("sipResult").textContent = "₹ 0.00";
+        }
+
+    </script>
+
+</body>
+
+</html>

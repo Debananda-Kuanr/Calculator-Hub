@@ -1,0 +1,694 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Smart Calculator Hub</title>
+    <link rel="icon" type="image/png" href="budget.png">
+
+    <STYle>
+        /* Reset some basic defaults */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.6;
+            background: #f9f9f9;
+            color: #333;
+        }
+
+        a {
+            text-decoration: none;
+            color: #333;
+        }
+
+        /* Container */
+        .container {
+            width: 90%;
+            max-width: 1100px;
+            margin: auto;
+        }
+
+        /* Header */
+        .header {
+            background: #57eeff;
+            padding: 20px 0;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+            position: sticky;
+            top: 0;
+            z-index: 999;
+        }
+
+        .logo {
+            font-size: 24px;
+            font-weight: bold;
+            color: #007bff;
+            margin-left: -8px;
+        }
+
+        .nav {
+            margin-top: 10px;
+        }
+
+        .nav a {
+            margin: 0 15px;
+            font-weight: 500;
+            transition: color 0.3s ease;
+        }
+
+        /* Active animated underline */
+        .nav a.active {
+            position: relative;
+            color: #007bff;
+            font-weight: bold;
+        }
+
+        /* Animated underline effect */
+        .nav a.active::after {
+            content: '';
+            position: absolute;
+            left: 0;
+            bottom: -5px;
+            width: 100%;
+            height: 3px;
+            background-color: #007bff;
+            border-radius: 2px;
+            animation: underlineSlide 0.4s ease-in-out;
+        }
+
+        @media (max-width: 768px) {
+            .nav {
+                top: 77px;
+                position: absolute;
+                top: 70px;
+                left: 0;
+                width: 100%;
+                background: white;
+                flex-direction: column;
+                display: none;
+                border-top: 1px solid #eee;
+                z-index: 999;
+                transition: background 0.3s ease;
+            }
+
+            .nav.show {
+                display: flex;
+                background: white;
+                /* Menu background stays white */
+            }
+
+            .nav a {
+                padding: 15px;
+                text-align: center;
+                background: rgb(231, 231, 231);
+                /* Default background for all links */
+                color: #007bff;
+                /* Blue text */
+                /* border-bottom: 1px solid #000000; */
+                border: 1px solid rgb(111, 111, 111);
+                font-weight: 500;
+                border-radius: 12px;
+                margin-top: 2px;
+                transition: background 0.3s ease, color 0.3s ease;
+            }
+
+            .nav a:hover {
+                background: #f0f0f0;
+            }
+
+            .nav a.active {
+                background: #007bff;
+                /* Active: blue background */
+                color: white;
+                /* Active: white text */
+                font-weight: bold;
+            }
+
+            .nav a::after {
+                display: none;
+            }
+        }
+
+
+        .nav a:hover::after {
+            width: 100%;
+        }
+
+
+        .nav a:hover {
+            color: #007bff;
+        }
+
+        /* Main */
+        .main {
+            padding: 40px 0;
+            text-align: center;
+        }
+
+        .hero h2 {
+            font-size: 2rem;
+            margin-bottom: 10px;
+        }
+
+        .hero p {
+            font-size: 1.1rem;
+            color: #555;
+        }
+
+        /* Cards Section */
+        .cards-section {
+            margin-top: 40px;
+        }
+
+        .card-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+            gap: 20px;
+            padding: 20px;
+        }
+
+        .card {
+            background: white;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.06);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            cursor: pointer;
+        }
+
+        .card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 12px 24px rgba(0, 0, 0, 0.15);
+        }
+
+        /* Footer */
+        .footer {
+            background: #c4f7ff;
+            text-align: center;
+            padding: 20px 0;
+            border-top: 1px solid #eee;
+            margin-top: 50px;
+            font-size: 18px;
+            color: #777;
+        }
+
+        /* Responsive nav - optional */
+        @media (min-width: 768px) {
+            .container {
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
+            }
+
+            .nav {
+                margin-top: 0;
+                font-size: 20px;
+            }
+        }
+
+        /* Hamburger styles */
+        .hamburger {
+            width: 30px;
+            height: 25px;
+            display: none;
+            flex-direction: column;
+            justify-content: space-between;
+            cursor: pointer;
+            z-index: 1001;
+        }
+
+        .hamburger span {
+            display: block;
+            height: 4px;
+            width: 100%;
+            background: #007bff;
+            border-radius: 4px;
+            transition: all 0.4s ease;
+        }
+
+        /* Active hamburger transforms */
+        .hamburger.active span:nth-child(1) {
+            transform: rotate(45deg) translateY(10px);
+        }
+
+        .hamburger.active span:nth-child(2) {
+            opacity: 0;
+        }
+
+        .hamburger.active span:nth-child(3) {
+            transform: rotate(-45deg) translateY(-10px);
+        }
+
+        /* Responsive Nav */
+        @media (max-width: 768px) {
+            .nav {
+                position: absolute;
+                top: 70px;
+                left: 0;
+                width: 100%;
+                background: white;
+                flex-direction: column;
+                display: none;
+                border-top: 1px solid #eee;
+
+            }
+
+            .nav.show {
+                display: flex;
+                animation: slideDown 0.3s ease forwards;
+            }
+
+            .nav a {
+                padding: 15px;
+                text-align: center;
+                border-bottom: 1px solid #f1f1f1;
+            }
+
+            .hamburger {
+                display: flex;
+            }
+
+            @keyframes slideDown {
+                from {
+                    opacity: 0;
+                    transform: translateY(-10px);
+                }
+
+                to {
+                    opacity: 1;
+                    transform: translateY(0);
+                }
+            }
+        }
+
+        /* Ensure the container uses flex layout */
+        .container {
+            width: 90%;
+            max-width: 1100px;
+            margin: auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        /* New wrapper to hold nav + hamburger on the right */
+        .right-menu {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+        }
+
+        /* Optional tweak for nav items spacing */
+        .nav a {
+            margin: 0 10px;
+        }
+
+        .footer {
+            background: #fff;
+            padding: 40px 20px 10px;
+            border-top: 1px solid #eee;
+            margin-top: 60px;
+            font-size: 14px;
+            color: #444;
+        }
+
+        .footer-content {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 30px;
+            justify-content: space-between;
+        }
+
+        .footer-box {
+            flex: 1 1 158px;
+        }
+
+        .footer-box h3,
+        .footer-box h4 {
+            color: #007bff;
+            margin-bottom: 15px;
+        }
+
+        .footer-box p,
+        .footer-box ul li {
+            margin-bottom: 10px;
+            color: #555;
+        }
+
+        .footer-box ul {
+            list-style: none;
+            padding: 0;
+        }
+
+        .footer-box ul li a {
+            color: #007bff;
+            text-decoration: none;
+            transition: 0.3s;
+        }
+
+        .footer-box ul li a:hover {
+            text-decoration: underline;
+        }
+
+        .footer-bottom {
+            text-align: center;
+            margin-top: 30px;
+            font-size: 13px;
+            color: #777;
+            border-top: 1px solid #eee;
+            padding-top: 15px;
+        }
+
+        /* Responsive Footer */
+        @media (max-width: 768px) {
+            .footer-content {
+                flex-direction: column;
+                text-align: center;
+            }
+
+            .footer-box {
+                margin-bottom: -11px;
+            }
+        }
+    </STYle>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background: #f9f9f9;
+            margin: 0;
+            padding: 0px;
+        }
+
+        .calculator-container {
+            max-width: 1200px;
+            margin: auto;
+        }
+
+        h1,
+        h2 {
+            text-align: center;
+            color: #8a0032;
+            margin-top: 10px;
+        }
+
+        .calculator-row {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 20px;
+            justify-content: center;
+            margin-top: 30px;
+        }
+
+        .calculator-box {
+            flex: 1 1 300px;
+            min-width: 300px;
+            max-width: 350px;
+            background: #fff;
+            border-radius: 10px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+            padding: 26px;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            height: 523px;
+
+        }
+
+        label {
+            display: block;
+            margin: 10px 0 5px;
+        }
+
+        input {
+            width: 95%;
+            padding: 8px;
+            margin-bottom: 10px;
+            border-radius: 5px;
+            border: 1px solid #ccc;
+            font-size: 14px;
+        }
+
+        .emi-result {
+            background: #c0537d;
+            color: white;
+            font-size: 24px;
+            text-align: center;
+            padding: 15px;
+            border-radius: 10px;
+            margin-top: 15px;
+        }
+
+        button {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            background-color: #8a0032;
+            color: white;
+            font-weight: bold;
+            width: 100%;
+            margin-top: 10px;
+        }
+
+        .info-section {
+            margin-top: 50px;
+            background: #fff;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+        }
+
+        .info-section h3 {
+            color: #8a0032;
+            margin-top: 20px;
+        }
+
+        .info-section p,
+        .info-section ul {
+            color: #555;
+            line-height: 1.6;
+        }
+
+        .emi-description {
+            background: #fff4f8;
+            border: 1px solid #f0cbd6;
+            padding: 20px;
+            border-radius: 10px;
+            margin-top: 40px;
+            color: #333;
+        }
+
+        .emi-description h2 {
+            color: #8a0032;
+        }
+
+        .emi-description p {
+            margin: 10px 0;
+            font-size: 16px;
+            line-height: 1.6;
+        }
+
+        @media (max-width: 768px) {
+            .calculator-row {
+                flex-direction: column;
+                align-items: center;
+            }
+
+            .calculator-box {
+                width: 100%;
+                max-width: 100%;
+            }
+
+            input {
+                width: 100%;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <header class="header">
+        <div class="container">
+            <h1 class="logo">💡Calculator Hub</h1>
+
+            <!-- Add this wrapper div to align nav + hamburger right -->
+            <div class="right-menu">
+                <nav class="nav" id="navbar">
+                    <a href="INDEX.HTML" class="active">Home</a>
+                    <a href="terms.html">Terms</a>
+                    <a href="about.html">About</a>
+                    <a href="contact.html">Contact</a>
+                </nav>
+
+                <!-- Hamburger Button -->
+                <div class="hamburger" id="hamburger">
+                    <span></span>
+                    <span></span>
+                    <span></span>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <div class="calculator-container">
+        <h1>EMI Calculator</h1>
+        <div class="calculator-row">
+            <div class="calculator-box">
+                <h2>Personal Loan EMI Calculator</h2>
+                <label>Loan Amount (₹)</label>
+                <input type="number" id="loan1" value="50000">
+
+                <label>Interest Rate (p.a)</label>
+                <input type="number" id="rate1" value="9.99">
+
+                <label>Tenure (years)</label>
+                <input type="number" id="tenure1" value="1">
+
+                <div class="emi-result" id="result1">₹0</div>
+                <button onclick="calculateEMI('loan1','rate1','tenure1','result1')">Apply Now</button>
+            </div>
+
+            <div class="calculator-box">
+                <h2>Home Loan EMI Calculator</h2>
+                <label>Loan Amount (₹)</label>
+                <input type="number" id="loan2" value="300000">
+
+                <label>Interest Rate (p.a)</label>
+                <input type="number" id="rate2" value="9">
+
+                <label>Tenure (years)</label>
+                <input type="number" id="tenure2" value="1">
+
+                <div class="emi-result" id="result2">₹0</div>
+                <button onclick="calculateEMI('loan2','rate2','tenure2','result2')">Apply Now</button>
+            </div>
+
+            <div class="calculator-box">
+                <h2>Car Loan EMI Calculator</h2>
+                <label>Loan Amount (₹)</label>
+                <input type="number" id="loan3" value="100000">
+
+                <label>Interest Rate (p.a)</label>
+                <input type="number" id="rate3" value="7">
+
+                <label>Tenure (years)</label>
+                <input type="number" id="tenure3" value="1">
+
+                <div class="emi-result" id="result3">₹0</div>
+                <button onclick="calculateEMI('loan3','rate3','tenure3','result3')">Apply Now</button>
+            </div>
+        </div>
+
+        <div class="emi-description">
+            <h2>About EMI</h2>
+            <p>Equated Monthly Installment (EMI) is the fixed payment amount made by a borrower to a lender at a
+                specified date each calendar month. EMIs are used to pay off both interest and principal every month so
+                that over a specified number of years, the loan is paid off in full.</p>
+            <p>EMI depends on three factors: the loan amount, the interest rate, and the tenure. With an EMI calculator,
+                users can easily estimate their monthly payments for different types of loans such as personal loans,
+                home loans, and car loans.</p>
+            <p>This allows borrowers to plan their finances better and make informed decisions while choosing a suitable
+                loan product that aligns with their financial goals and capabilities.</p>
+        </div>
+
+        <div class="info-section">
+            <h2>Disclaimer</h2>
+            <p>Axis Bank does not guarantee accuracy, completeness or correct sequence of any of the details provided
+                herein. The use of any information set out is entirely at the user's own risk.</p>
+            <p><a href="#">Read more</a></p>
+
+            <h3>What is EMI?</h3>
+            <p>EMI refers to the fixed amount you pay monthly towards your loan. It includes both principal and
+                interest. This tool helps you:</p>
+            <ul>
+                <li><strong>Budget effectively:</strong> Understand your financial commitment.</li>
+                <li><strong>Compare loan options:</strong> Find a repayment option that fits your budget.</li>
+                <li><strong>Make informed decisions:</strong> Plan ahead with clarity.</li>
+            </ul>
+
+            <h3>EMI Calculation Formula</h3>
+            <p>EMI = [P x R x (1+R)^N] / [(1+R)^N - 1]</p>
+            <p>Where P = Principal, R = Monthly interest rate, N = Loan tenure in months.</p>
+
+            <h3>Using the EMI Calculator</h3>
+            <ul>
+                <li><strong>Enter loan details:</strong> Amount, tenure, and interest rate.</li>
+                <li><strong>Get result:</strong> Your EMI will be instantly calculated.</li>
+                <li><strong>Make decisions:</strong> Use this data to compare or adjust your loan plan.</li>
+            </ul>
+        </div>
+    </div>
+
+
+    <footer class="footer">
+        <div class="container footer-content">
+            <div class="footer-box">
+                <h3>Smart Calculator Hub</h3>
+                <p>Helping you make smarter financial decisions with quick and easy-to-use calculators.</p>
+                <p>Designed By Debananda Kuanr</p>
+            </div>
+
+            <div class="footer-box">
+                <h4>Quick Links</h4>
+                <ul>
+                    <li><a href="INDEX.HTML">Home</a></li>
+                    <li><a href="terms.html">Terms</a></li>
+                    <li><a href="about.html">About</a></li>
+                    <li><a href="contact.html">Contact</a></li>
+                </ul>
+            </div>
+
+            <div class="footer-box">
+                <h4>Contact Us</h4>
+                <ul>
+                    <li>Email: <a
+                            href="mailto:debanandakuanr453@gmail.com?subject=Hello&body=I%20wanted%20to%20reach%20out%20to%20you.">calculatorsupport@gmail.com</a>
+                    </li>
+                    <li>Phone:<a
+                            href="sms:9439204006?body=Hello%2C%20I%20wanted%20to%20contact%20you.">+91-9568-257-874</a>
+                    </li>
+                    <li>Location: Odisha, India</li>
+                </ul>
+            </div>
+        </div>
+
+        <div class="footer-bottom">
+            <p>&copy; 2025 Smart Calculator Hub. All rights reserved.</p>
+        </div>
+    </footer>
+
+    <script>
+        const hamburger = document.getElementById("hamburger");
+        const navbar = document.getElementById("navbar");
+
+        hamburger.addEventListener("click", () => {
+            hamburger.classList.toggle("active");
+            navbar.classList.toggle("show");
+        });
+    </script>
+
+    <script>
+        function calculateEMI(loanId, rateId, tenureId, resultId) {
+            const principal = parseFloat(document.getElementById(loanId).value);
+            const annualRate = parseFloat(document.getElementById(rateId).value);
+            const years = parseFloat(document.getElementById(tenureId).value);
+
+            const monthlyRate = annualRate / 12 / 100;
+            const months = years * 12;
+            const emi = (principal * monthlyRate * Math.pow(1 + monthlyRate, months)) / (Math.pow(1 + monthlyRate, months) - 1);
+
+            document.getElementById(resultId).innerText = `₹${emi.toFixed(0)}`;
+        }
+    </script>
+
+
+
+</body>
+
+</html>

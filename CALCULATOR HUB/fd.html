@@ -1,0 +1,758 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Smart Calculator Hub</title>
+    <link rel="icon" type="image/png" href="budget.png">
+
+    <STYle>
+        /* Reset some basic defaults */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.6;
+            background: #f9f9f9;
+            color: #333;
+        }
+
+        a {
+            text-decoration: none;
+            color: #333;
+        }
+
+        /* Container */
+        .container {
+            width: 90%;
+            max-width: 1100px;
+            margin: auto;
+        }
+
+        /* Header */
+        .header {
+            background: #57eeff;
+            padding: 20px 0;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+            position: sticky;
+            top: 0;
+            z-index: 999;
+        }
+
+        .logo {
+            font-size: 24px;
+            font-weight: bold;
+            color: #007bff;
+            margin-left: -8px;
+        }
+
+        .nav {
+            margin-top: 10px;
+        }
+
+        .nav a {
+            margin: 0 15px;
+            font-weight: 500;
+            transition: color 0.3s ease;
+        }
+
+        /* Active animated underline */
+        .nav a.active {
+            position: relative;
+            color: #007bff;
+            font-weight: bold;
+        }
+
+        /* Animated underline effect */
+        .nav a.active::after {
+            content: '';
+            position: absolute;
+            left: 0;
+            bottom: -5px;
+            width: 100%;
+            height: 3px;
+            background-color: #007bff;
+            border-radius: 2px;
+            animation: underlineSlide 0.4s ease-in-out;
+        }
+
+        @media (max-width: 768px) {
+            .nav {
+                top: 77px;
+                position: absolute;
+                top: 70px;
+                left: 0;
+                width: 100%;
+                background: white;
+                flex-direction: column;
+                display: none;
+                border-top: 1px solid #eee;
+                z-index: 999;
+                transition: background 0.3s ease;
+            }
+
+            .nav.show {
+                display: flex;
+                background: white;
+                /* Menu background stays white */
+            }
+
+            .nav a {
+                padding: 15px;
+                text-align: center;
+                background: rgb(231, 231, 231);
+                /* Default background for all links */
+                color: #007bff;
+                /* Blue text */
+                /* border-bottom: 1px solid #000000; */
+                border: 1px solid rgb(111, 111, 111);
+                font-weight: 500;
+                border-radius: 12px;
+                margin-top: 2px;
+                transition: background 0.3s ease, color 0.3s ease;
+            }
+
+            .nav a:hover {
+                background: #f0f0f0;
+            }
+
+            .nav a.active {
+                background: #007bff;
+                /* Active: blue background */
+                color: white;
+                /* Active: white text */
+                font-weight: bold;
+            }
+
+            .nav a::after {
+                display: none;
+            }
+        }
+
+
+        .nav a:hover::after {
+            width: 100%;
+        }
+
+
+        .nav a:hover {
+            color: #007bff;
+        }
+
+        /* Main */
+        .main {
+            padding: 40px 0;
+            text-align: center;
+        }
+
+        .hero h2 {
+            font-size: 2rem;
+            margin-bottom: 10px;
+        }
+
+        .hero p {
+            font-size: 1.1rem;
+            color: #555;
+        }
+
+        /* Cards Section */
+        .cards-section {
+            margin-top: 40px;
+        }
+
+        .card-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+            gap: 20px;
+            padding: 20px;
+        }
+
+        .card {
+            background: white;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.06);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            cursor: pointer;
+        }
+
+        .card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 12px 24px rgba(0, 0, 0, 0.15);
+        }
+
+        /* Footer */
+        .footer {
+            background: #c4f7ff;
+            text-align: center;
+            padding: 20px 0;
+            border-top: 1px solid #eee;
+            margin-top: 50px;
+            font-size: 18px;
+            color: #777;
+        }
+
+        /* Responsive nav - optional */
+        @media (min-width: 768px) {
+            .container {
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
+            }
+
+            .nav {
+                margin-top: 0;
+                font-size: 20px;
+            }
+        }
+
+        /* Hamburger styles */
+        .hamburger {
+            width: 30px;
+            height: 25px;
+            display: none;
+            flex-direction: column;
+            justify-content: space-between;
+            cursor: pointer;
+            z-index: 1001;
+        }
+
+        .hamburger span {
+            display: block;
+            height: 4px;
+            width: 100%;
+            background: #007bff;
+            border-radius: 4px;
+            transition: all 0.4s ease;
+        }
+
+        /* Active hamburger transforms */
+        .hamburger.active span:nth-child(1) {
+            transform: rotate(45deg) translateY(10px);
+        }
+
+        .hamburger.active span:nth-child(2) {
+            opacity: 0;
+        }
+
+        .hamburger.active span:nth-child(3) {
+            transform: rotate(-45deg) translateY(-10px);
+        }
+
+        /* Responsive Nav */
+        @media (max-width: 768px) {
+            .nav {
+                position: absolute;
+                top: 70px;
+                left: 0;
+                width: 100%;
+                background: white;
+                flex-direction: column;
+                display: none;
+                border-top: 1px solid #eee;
+
+            }
+
+            .nav.show {
+                display: flex;
+                animation: slideDown 0.3s ease forwards;
+            }
+
+            .nav a {
+                padding: 15px;
+                text-align: center;
+                border-bottom: 1px solid #f1f1f1;
+            }
+
+            .hamburger {
+                display: flex;
+            }
+
+            @keyframes slideDown {
+                from {
+                    opacity: 0;
+                    transform: translateY(-10px);
+                }
+
+                to {
+                    opacity: 1;
+                    transform: translateY(0);
+                }
+            }
+        }
+
+        /* Ensure the container uses flex layout */
+        .container {
+            width: 90%;
+            max-width: 1100px;
+            margin: auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        /* New wrapper to hold nav + hamburger on the right */
+        .right-menu {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+        }
+
+        /* Optional tweak for nav items spacing */
+        .nav a {
+            margin: 0 10px;
+        }
+
+        .footer {
+            background: #fff;
+            padding: 40px 20px 10px;
+            border-top: 1px solid #eee;
+            margin-top: 60px;
+            font-size: 14px;
+            color: #444;
+        }
+
+        .footer-content {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 30px;
+            justify-content: space-between;
+        }
+
+        .footer-box {
+            flex: 1 1 158px;
+        }
+
+        .footer-box h3,
+        .footer-box h4 {
+            color: #007bff;
+            margin-bottom: 15px;
+        }
+
+        .footer-box p,
+        .footer-box ul li {
+            margin-bottom: 10px;
+            color: #555;
+        }
+
+        .footer-box ul {
+            list-style: none;
+            padding: 0;
+        }
+
+        .footer-box ul li a {
+            color: #007bff;
+            text-decoration: none;
+            transition: 0.3s;
+        }
+
+        .footer-box ul li a:hover {
+            text-decoration: underline;
+        }
+
+        .footer-bottom {
+            text-align: center;
+            margin-top: 30px;
+            font-size: 13px;
+            color: #777;
+            border-top: 1px solid #eee;
+            padding-top: 15px;
+        }
+
+        /* Responsive Footer */
+        @media (max-width: 768px) {
+            .footer-content {
+                flex-direction: column;
+                text-align: center;
+            }
+
+            .footer-box {
+                margin-bottom: -11px;
+            }
+        }
+
+
+        body {
+            font-family: Arial, sans-serif;
+            background: #f9f9f9;
+            padding: 0px;
+            color: #333;
+        }
+
+        h1 {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        .fd-container {
+            max-width: 960px;
+            background: white;
+            margin: auto;
+            padding: 20px;
+            border-radius: 12px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            display: flex;
+            flex-wrap: wrap;
+            gap: 30px;
+        }
+
+        .fd-left,
+        .fd-right {
+            flex: 1;
+            min-width: 280px;
+        }
+
+        .form-group {
+            margin-bottom: 15px;
+        }
+
+        label {
+            font-weight: bold;
+            display: block;
+            margin-bottom: 5px;
+        }
+
+        input[type="number"],
+        select {
+            width: 100%;
+            padding: 8px;
+            border: 1px solid #ccc;
+            border-radius: 6px;
+        }
+
+        #fdDate {
+            width: 100%;
+            max-width: 441px;
+            padding: 9px 12px;
+            border: 1.5px solid #007bff;
+            border-radius: 7px;
+            font-size: 1rem;
+            background: #f7fbff;
+            color: #222;
+            transition: border-color 0.2s;
+            box-shadow: 0 1px 4px rgba(0, 123, 255, 0.06);
+            outline: none;
+            margin-top: 3px;
+            margin-bottom: 2px;
+        }
+
+        #fdDate:focus {
+            border-color: #89014f;
+            background: #fff;
+        }
+
+        .radio-group {
+            display: flex;
+            gap: 20px;
+            margin-top: 5px;
+        }
+
+        .result-box {
+            background: #f2f2f2;
+            padding: 20px;
+            border-radius: 12px;
+            padding-top: 58px;
+            padding-bottom: 60px;
+        }
+
+        .result-box h3 {
+            margin-bottom: 10px;
+        }
+
+        .result-row {
+            display: flex;
+            justify-content: space-between;
+            margin: 6px 0;
+        }
+
+        .slider {
+            width: 100%;
+        }
+
+        .btn {
+            margin-top: 15px;
+            padding: 10px 20px;
+            background: #89014f;
+            color: white;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            width: 100%;
+        }
+
+        @media (max-width: 768px) {
+            .fd-container {
+                flex-direction: column;
+            }
+        }
+
+        .info-section,
+        .info-section,
+        .disclaimer {
+            margin-top: 30px;
+            background: #fff;
+            padding: 43px;
+            border-radius: 12px;
+            box-shadow: -19px 17px 15px 2px rgb(0 0 0 / 20%);
+            max-width: 965px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        .info-section h3,
+        .disclaimer h3 {
+            margin-bottom: 15px;
+        }
+    </STYle>
+</head>
+
+<body>
+
+    <header class="header">
+        <div class="container">
+            <h1 class="logo">💡Calculator Hub</h1>
+
+            <!-- Add this wrapper div to align nav + hamburger right -->
+            <div class="right-menu">
+                <nav class="nav" id="navbar">
+                    <a href="index.html" class="active">Home</a>
+                    <a href="terms.html">Terms</a>
+                    <a href="about.html">About</a>
+                    <a href="contact.html">Contact</a>
+                </nav>
+
+                <!-- Hamburger Button -->
+                <div class="hamburger" id="hamburger">
+                    <span></span>
+                    <span></span>
+                    <span></span>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <h1>FD Calculator</h1>
+
+    <div class="fd-container">
+        <div class="fd-left">
+            <div class="form-group">
+                <label>Type of Customer</label>
+                <div class="radio-group">
+                    <label><input type="radio" name="customerType" value="normal" checked> Normal</label>
+                    <label><input type="radio" name="customerType" value="senior"> Senior Citizen</label>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label>Type of Fixed Deposit</label>
+                <select id="fdType">
+                    <option>Reinvestment (Cumulative)</option>
+                    <option>Quarterly Payout</option>
+                    <option>Monthly Payout</option>
+                    <option>Short Term Deposit</option>
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label for="fdDate">Date of Fixed Deposit</label>
+                <input type="date" id="fdDate" />
+            </div>
+            <div class="form-group">
+                <label>Amount Deposit (₹)</label>
+                <input type="number" id="amount" value="5000" min="1000" step="100">
+            </div>
+
+            <div class="form-group">
+                <label for="interestRateInput">Rate of Interest (%)</label>
+                <input type="number" id="interestRateInput" min="0" max="20" step="0.01" placeholder="e.g., 5.5">
+            </div>
+
+
+            <div class="form-group">
+                <label>Tenure</label>
+                <div style="display:flex; gap:10px;">
+                    <input type="number" id="tenureYears" placeholder="Number of Years" min="0">
+                    <input type="number" id="tenureMonths" placeholder="Number of Months" min="0">
+                    <input type="number" id="tenureDays" placeholder="Number of days" min="0">
+                </div>
+            </div>
+        </div>
+
+        <div class="fd-right">
+            <div class="result-box">
+                <h3>FD Maturity Details</h3>
+                <div class="result-row">
+                    <strong>Maturity Value:</strong> <span id="maturityValue">₹0</span>
+                </div>
+                <div class="result-row">
+                    <strong>Rate of Interest:</strong> <span id="rateOfInterest">--%</span>
+                </div>
+                <div class="result-row">
+                    <strong>Maturity Date:</strong> <span id="maturityDate">--</span>
+                </div>
+                <div class="result-row">
+                    <strong>Aggregate Interest:</strong> <span id="interestEarned">₹0</span>
+                </div>
+                <div
+                    style="margin-top: 20px; background: #fff3cd; padding: 10px; border: 1px solid #ffeeba; border-radius: 8px; color: #856404;">
+                    📌 This is an estimate based on your input. Final maturity value may vary based on actual bank
+                    interest rates and policies.
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+    <div class="info-section">
+        <h3>About the Calculator</h3>
+        <p>
+            The Education Loan EMI Calculator is a tool designed to help users estimate their monthly loan repayment
+            obligations.
+            It takes into account the loan amount, interest rate, and tenure to calculate the Equated Monthly
+            Installment (EMI).
+        </p>
+        <p>
+            This tool provides a comprehensive breakdown of principal and interest components in each payment,
+            along with a month-wise amortization schedule. It is especially useful for students and parents
+            planning for higher education financing.
+        </p>
+        <p>
+            By adjusting the inputs, users can visualize how loan terms impact monthly payments and total repayment
+            amount,
+            allowing for informed financial planning.
+        </p>
+    </div>
+
+    <div class="disclaimer">
+        <h3>Disclaimer</h3>
+        <p>
+            This calculator is intended for informational and educational purposes only.
+            The results are based on standard formulae and may not reflect actual offers from banks or financial
+            institutions.
+        </p>
+        <p>
+            Smart Calculator Hub does not guarantee the accuracy or applicability of the results to your specific
+            situation.
+            Please consult with a certified financial advisor or your bank before making any financial decisions based
+            on the
+            information provided by this tool.
+        </p>
+    </div>
+
+
+    <script>
+        function calculateFD() {
+            const amount = parseFloat(document.getElementById("amount").value);
+            const tenureYears = parseInt(document.getElementById("tenureYears").value) || 0;
+            const tenureMonths = parseInt(document.getElementById("tenureMonths").value) || 0;
+            const tenureDays = parseInt(document.getElementById("tenureDays").value) || 0;
+            const rateInput = parseFloat(document.getElementById("interestRateInput").value);
+            const fdType = document.getElementById("fdType").value;
+
+            const totalMonths = tenureYears * 12 + tenureMonths + (tenureDays / 30);
+            const totalYears = totalMonths / 12;
+
+            // Validate inputs
+            if (isNaN(amount) || isNaN(rateInput) || amount <= 0 || rateInput <= 0) {
+                document.getElementById("maturityValue").textContent = "₹0";
+                document.getElementById("interestEarned").textContent = "₹0";
+                document.getElementById("rateOfInterest").textContent = "--%";
+                document.getElementById("maturityDate").textContent = "--";
+                return;
+            }
+
+            const interestRate = rateInput / 100;
+
+            let maturityValue = 0;
+            if (fdType === "Reinvestment (Cumulative)") {
+                // Quarterly compounding
+                maturityValue = amount * Math.pow(1 + interestRate / 4, (4 * totalYears));
+            } else {
+                // Simple interest for payout types
+                maturityValue = amount + (amount * interestRate * totalYears);
+            }
+
+            const interest = maturityValue - amount;
+
+            // Get and calculate maturity date
+            const fdStart = new Date(document.getElementById("fdDate").value);
+            if (isNaN(fdStart)) return;
+
+            const maturity = new Date(fdStart);
+            maturity.setFullYear(fdStart.getFullYear() + tenureYears);
+            maturity.setMonth(fdStart.getMonth() + tenureMonths);
+            maturity.setDate(fdStart.getDate() + tenureDays);
+
+            // Output results
+            document.getElementById("maturityValue").textContent = "₹" + maturityValue.toFixed(0);
+            document.getElementById("interestEarned").textContent = "₹" + interest.toFixed(0);
+            document.getElementById("rateOfInterest").textContent = rateInput.toFixed(2) + "%";
+            document.getElementById("maturityDate").textContent = maturity.toDateString();
+        }
+
+        // Initial calculation
+        calculateFD();
+
+        // Recalculate on any input change
+        document.querySelectorAll("input, select").forEach(input => {
+            input.addEventListener("input", calculateFD);
+        });
+    </script>
+
+
+    <footer class="footer">
+        <div class="container footer-content">
+            <div class="footer-box">
+                <h3>Smart Calculator Hub</h3>
+                <p>Helping you make smarter financial decisions with quick and easy-to-use calculators.</p>
+                <p>Designed By Debananda Kuanr</p>
+            </div>
+
+            <div class="footer-box">
+                <h4>Quick Links</h4>
+                <ul>
+                    <li><a href="index.html">Home</a></li>
+                    <li><a href="terms.html">Terms</a></li>
+                    <li><a href="about.html">About</a></li>
+                    <li><a href="contact.html">Contact</a></li>
+                </ul>
+            </div>
+
+            <div class="footer-box">
+                <h4>Contact Us</h4>
+                <ul>
+                    <li>Email: <a
+                            href="mailto:debanandakuanr453@gmail.com?subject=Hello&body=I%20wanted%20to%20reach%20out%20to%20you.">calculatorsupport@gmail.com</a>
+                    </li>
+                    <li>Phone:<a
+                            href="sms:9439204006?body=Hello%2C%20I%20wanted%20to%20contact%20you.">+91-9568-257-874</a>
+                    </li>
+                    <li>Location: Odisha, India</li>
+                </ul>
+            </div>
+        </div>
+
+        <div class="footer-bottom">
+            <p>&copy; 2025 Smart Calculator Hub. All rights reserved.</p>
+        </div>
+    </footer>
+
+    <script>
+        const hamburger = document.getElementById("hamburger");
+        const navbar = document.getElementById("navbar");
+
+        hamburger.addEventListener("click", () => {
+            hamburger.classList.toggle("active");
+            navbar.classList.toggle("show");
+        });
+    </script>
+
+
+</body>
+
+</html>

@@ -1,0 +1,639 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Smart Calculator Hub</title>
+    <link rel="icon" type="image/png" href="budget.png">
+
+    <STYle>
+        /* Reset some basic defaults */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.6;
+            background: #f9f9f9;
+            color: #333;
+        }
+
+        a {
+            text-decoration: none;
+            color: #333;
+        }
+
+        /* Container */
+        .container {
+            width: 90%;
+            max-width: 1100px;
+            margin: auto;
+        }
+
+        /* Header */
+        .header {
+            background: #57eeff;
+            padding: 20px 0;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+            position: sticky;
+            top: 0;
+            z-index: 999;
+        }
+
+        .logo {
+            font-size: 24px;
+            font-weight: bold;
+            color: #007bff;
+            margin-left: -8px;
+        }
+
+        .nav {
+            margin-top: 10px;
+        }
+
+        .nav a {
+            margin: 0 15px;
+            font-weight: 500;
+            transition: color 0.3s ease;
+        }
+
+        /* Active animated underline */
+        .nav a.active {
+            position: relative;
+            color: #007bff;
+            font-weight: bold;
+        }
+
+        /* Animated underline effect */
+        .nav a.active::after {
+            content: '';
+            position: absolute;
+            left: 0;
+            bottom: -5px;
+            width: 100%;
+            height: 3px;
+            background-color: #007bff;
+            border-radius: 2px;
+            animation: underlineSlide 0.4s ease-in-out;
+        }
+
+        @media (max-width: 768px) {
+            .nav {
+                top: 77px;
+                position: absolute;
+                top: 70px;
+                left: 0;
+                width: 100%;
+                background: white;
+                flex-direction: column;
+                display: none;
+                border-top: 1px solid #eee;
+                z-index: 999;
+                transition: background 0.3s ease;
+            }
+
+            .nav.show {
+                display: flex;
+                background: white;
+                /* Menu background stays white */
+            }
+
+            .nav a {
+                padding: 15px;
+                text-align: center;
+                background: rgb(231, 231, 231);
+                /* Default background for all links */
+                color: #007bff;
+                /* Blue text */
+                /* border-bottom: 1px solid #000000; */
+                border: 1px solid rgb(111, 111, 111);
+                font-weight: 500;
+                border-radius: 12px;
+                margin-top: 2px;
+                transition: background 0.3s ease, color 0.3s ease;
+            }
+
+            .nav a:hover {
+                background: #f0f0f0;
+            }
+
+            .nav a.active {
+                background: #007bff;
+                /* Active: blue background */
+                color: white;
+                /* Active: white text */
+                font-weight: bold;
+            }
+
+            .nav a::after {
+                display: none;
+            }
+        }
+
+
+        .nav a:hover::after {
+            width: 100%;
+        }
+
+
+        .nav a:hover {
+            color: #007bff;
+        }
+
+        /* Main */
+        .main {
+            padding: 40px 0;
+            text-align: center;
+        }
+
+        .hero h2 {
+            font-size: 2rem;
+            margin-bottom: 10px;
+        }
+
+        .hero p {
+            font-size: 1.1rem;
+            color: #555;
+        }
+
+        /* Cards Section */
+        .cards-section {
+            margin-top: 40px;
+        }
+
+        .card-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+            gap: 20px;
+            padding: 20px;
+        }
+
+        .card {
+            background: white;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.06);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            cursor: pointer;
+        }
+
+        .card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 12px 24px rgba(0, 0, 0, 0.15);
+        }
+
+        /* Footer */
+        .footer {
+            background: #c4f7ff;
+            text-align: center;
+            padding: 20px 0;
+            border-top: 1px solid #eee;
+            margin-top: 50px;
+            font-size: 18px;
+            color: #777;
+        }
+
+        /* Responsive nav - optional */
+        @media (min-width: 768px) {
+            .container {
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
+            }
+
+            .nav {
+                margin-top: 0;
+                font-size: 20px;
+            }
+        }
+
+        /* Hamburger styles */
+        .hamburger {
+            width: 30px;
+            height: 25px;
+            display: none;
+            flex-direction: column;
+            justify-content: space-between;
+            cursor: pointer;
+            z-index: 1001;
+        }
+
+        .hamburger span {
+            display: block;
+            height: 4px;
+            width: 100%;
+            background: #007bff;
+            border-radius: 4px;
+            transition: all 0.4s ease;
+        }
+
+        /* Active hamburger transforms */
+        .hamburger.active span:nth-child(1) {
+            transform: rotate(45deg) translateY(10px);
+        }
+
+        .hamburger.active span:nth-child(2) {
+            opacity: 0;
+        }
+
+        .hamburger.active span:nth-child(3) {
+            transform: rotate(-45deg) translateY(-10px);
+        }
+
+        /* Responsive Nav */
+        @media (max-width: 768px) {
+            .nav {
+                position: absolute;
+                top: 70px;
+                left: 0;
+                width: 100%;
+                background: white;
+                flex-direction: column;
+                display: none;
+                border-top: 1px solid #eee;
+
+            }
+
+            .nav.show {
+                display: flex;
+                animation: slideDown 0.3s ease forwards;
+            }
+
+            .nav a {
+                padding: 15px;
+                text-align: center;
+                border-bottom: 1px solid #f1f1f1;
+            }
+
+            .hamburger {
+                display: flex;
+            }
+
+            @keyframes slideDown {
+                from {
+                    opacity: 0;
+                    transform: translateY(-10px);
+                }
+
+                to {
+                    opacity: 1;
+                    transform: translateY(0);
+                }
+            }
+        }
+
+        /* Ensure the container uses flex layout */
+        .container {
+            width: 90%;
+            max-width: 1100px;
+            margin: auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        /* New wrapper to hold nav + hamburger on the right */
+        .right-menu {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+        }
+
+        /* Optional tweak for nav items spacing */
+        .nav a {
+            margin: 0 10px;
+        }
+
+        .footer {
+            background: #fff;
+            padding: 40px 20px 10px;
+            border-top: 1px solid #eee;
+            margin-top: 60px;
+            font-size: 14px;
+            color: #444;
+        }
+
+        .footer-content {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 30px;
+            justify-content: space-between;
+        }
+
+        .footer-box {
+            flex: 1 1 158px;
+        }
+
+        .footer-box h3,
+        .footer-box h4 {
+            color: #007bff;
+            margin-bottom: 15px;
+        }
+
+        .footer-box p,
+        .footer-box ul li {
+            margin-bottom: 10px;
+            color: #555;
+        }
+
+        .footer-box ul {
+            list-style: none;
+            padding: 0;
+        }
+
+        .footer-box ul li a {
+            color: #007bff;
+            text-decoration: none;
+            transition: 0.3s;
+        }
+
+        .footer-box ul li a:hover {
+            text-decoration: underline;
+        }
+
+        .footer-bottom {
+            text-align: center;
+            margin-top: 30px;
+            font-size: 13px;
+            color: #777;
+            border-top: 1px solid #eee;
+            padding-top: 15px;
+        }
+
+        /* Responsive Footer */
+        @media (max-width: 768px) {
+            .footer-content {
+                flex-direction: column;
+                text-align: center;
+            }
+
+            .footer-box {
+                margin-bottom: -11px;
+            }
+        }
+
+
+        .avgbal-calculator {
+            background: #fff;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+            max-width: 1100px;
+            margin: 40px auto;
+        }
+
+        .calc-container {
+            display: flex;
+            flex-wrap: wrap;
+        }
+
+        .calc-form,
+        .calc-result {
+            flex: 1 1 280px;
+            padding: 20px;
+        }
+
+        .calc-form h2 {
+            font-size: 1.5rem;
+            margin-bottom: 15px;
+            color: #004aad;
+        }
+
+        .calc-result h3 {
+            font-size: 1.3rem;
+            margin-bottom: 15px;
+            color: #333;
+        }
+
+        label {
+            display: block;
+            margin-top: 15px;
+            font-weight: 500;
+            color: #555;
+        }
+
+        input {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            margin-top: 5px;
+        }
+
+        .btn-group {
+            margin-top: 20px;
+            display: flex;
+            gap: 10px;
+        }
+
+        .btn-primary {
+            background: #8a0032;
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+
+        .btn-secondary {
+            background: white;
+            color: #8a0032;
+            border: 1px solid #8a0032;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+
+        .result-box {
+            background: #c0537d;
+            color: white;
+            font-size: 2rem;
+            padding: 20px;
+            border-radius: 8px;
+            text-align: center;
+            margin-bottom: 15px;
+        }
+
+        .fee-info {
+            color: #a00;
+            font-weight: 600;
+        }
+
+        .calc-container {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 20px;
+        }
+
+        @media (max-width: 768px) {
+            .calc-container {
+                flex-direction: column;
+            }
+        }
+
+        .insight-box {
+  background: #f8f9fa;
+  border-left: 4px solid #007bff;
+  border-radius: 8px;
+  padding: 16px;
+  margin-top: 10px;
+  box-shadow: 0 4px 10px rgba(0,0,0,0.06);
+  font-size: 1rem;
+}
+
+.insight-text {
+  color: #333;
+  font-weight: 500;
+  margin-bottom: 8px;
+}
+
+.fee-info {
+  color: #b00020;
+  font-weight: 600;
+}
+
+    </STYle>
+</head>
+
+<body>
+
+    <header class="header">
+        <div class="container">
+            <h1 class="logo">💡Calculator Hub</h1>
+
+            <!-- Add this wrapper div to align nav + hamburger right -->
+            <div class="right-menu">
+                <nav class="nav" id="navbar">
+                    <a href="INDEX.HTML" class="active">Home</a>
+                    <a href="#calculators">Terms</a>
+                    <a href="#about">About</a>
+                    <a href="#contact">Contact</a>
+                </nav>
+
+                <!-- Hamburger Button -->
+                <div class="hamburger" id="hamburger">
+                    <span></span>
+                    <span></span>
+                    <span></span>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <section class="avgbal-calculator">
+        <div class="calc-container">
+            <!-- Left: Inputs -->
+            <div class="calc-form">
+                <h2>Average Balance Calculator</h2>
+                <label>Average Balance Requirement</label>
+                <input type="number" id="requiredBalance" placeholder="₹ Minimum required balance">
+
+                <label>Total of Daily Closing Balances</label>
+                <input type="number" id="totalBalance" placeholder="₹ Sum of end-day balances">
+
+                <label>Number of Days</label>
+                <input type="number" id="numDays" placeholder="Number of days">
+
+                <div class="btn-group">
+                    <button class="btn-secondary" onclick="resetFields()">Reset</button>
+                    <button class="btn-primary" onclick="calculateAverage()">Calculate</button>
+                </div>
+            </div>
+
+            <!-- Right: Results -->
+            <div class="calc-result">
+                <h3>Average monthly/quarterly balance maintained</h3>
+                <div class="result-box" id="averageDisplay">₹ 0.00</div>
+                <div class="insight-box">
+                    <p id="dailyShortfall" class="insight-text">Daily_Short_Fall</p>
+                    <p id="feeInfo" class="fee-info">Fee_Info</p>
+                </div>
+
+            </div>
+        </div>
+    </section>
+
+    <script>
+        function calculateAverage() {
+            const req = parseFloat(document.getElementById('requiredBalance').value);
+            const total = parseFloat(document.getElementById('totalBalance').value);
+            const days = parseFloat(document.getElementById('numDays').value);
+            if (!req || !total || !days) {
+                alert("Please fill in all fields correctly."); return;
+            }
+            const avg = total / days;
+            document.getElementById('averageDisplay').innerText = `₹ ${avg.toFixed(2)}`;
+            const shortfall = Math.max(req - avg, 0);
+            const remainingDays = days; // assuming calculation for same period
+            const dailyNeed = shortfall > 0 ? (shortfall * days / remainingDays).toFixed(2) : 0;
+            document.getElementById('dailyShortfall').innerText = shortfall > 0 ?
+                `To avoid charges, maintain ₹ ${dailyNeed} daily.` : `✅ Balanced maintained.`;
+            const fee = shortfall > 0 ? `Estimated charges: ₹ ${(shortfall * 0.06).toFixed(2)}` : '';
+            document.getElementById('feeInfo').innerText = fee;
+        }
+        function resetFields() {
+            ['requiredBalance', 'totalBalance', 'numDays'].forEach(id => document.getElementById(id).value = '');
+            document.getElementById('averageDisplay').innerText = '₹ 0.00';
+            document.getElementById('dailyShortfall').innerText = '--';
+            document.getElementById('feeInfo').innerText = '--';
+        }
+
+    </script>
+
+
+
+    <footer class="footer">
+        <div class="container footer-content">
+            <div class="footer-box">
+                <h3>Smart Calculator Hub</h3>
+                <p>Helping you make smarter financial decisions with quick and easy-to-use calculators.</p>
+                <p>Designed By Debananda Kuanr</p>
+            </div>
+
+            <div class="footer-box">
+                <h4>Quick Links</h4>
+                <ul>
+                    <li><a href="INDEX.HTML">Home</a></li>
+                    <li><a href="#calculators">Terms</a></li>
+                    <li><a href="#about">About</a></li>
+                    <li><a href="#contact">Contact</a></li>
+                </ul>
+            </div>
+
+            <div class="footer-box">
+                <h4>Contact Us</h4>
+                <ul>
+                    <li>Email: <a
+                            href="mailto:debanandakuanr453@gmail.com?subject=Hello&body=I%20wanted%20to%20reach%20out%20to%20you.">calculatorsupport@gmail.com</a>
+                    </li>
+                    <li>Phone:<a
+                            href="sms:9439204006?body=Hello%2C%20I%20wanted%20to%20contact%20you.">+91-9568-257-874</a>
+                    </li>
+                    <li>Location: Odisha, India</li>
+                </ul>
+            </div>
+        </div>
+
+        <div class="footer-bottom">
+            <p>&copy; 2025 Smart Calculator Hub. All rights reserved.</p>
+        </div>
+    </footer>
+
+    <script>
+        const hamburger = document.getElementById("hamburger");
+        const navbar = document.getElementById("navbar");
+
+        hamburger.addEventListener("click", () => {
+            hamburger.classList.toggle("active");
+            navbar.classList.toggle("show");
+        });
+    </script>
+
+
+</body>
+
+</html>

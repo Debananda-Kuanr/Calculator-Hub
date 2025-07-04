@@ -1,0 +1,747 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Smart Calculator Hub</title>
+    <link rel="icon" type="image/png" href="budget.png">
+
+    <STYle>
+        /* Reset some basic defaults */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.6;
+            background: #f9f9f9;
+            color: #333;
+        }
+
+        a {
+            text-decoration: none;
+            color: #333;
+        }
+
+        /* Container */
+        .container {
+            width: 90%;
+            max-width: 1100px;
+            margin: auto;
+        }
+
+        /* Header */
+        .header {
+            background: #57eeff;
+            padding: 20px 0;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+            position: sticky;
+            top: 0;
+            z-index: 999;
+        }
+
+        .logo {
+            font-size: 24px;
+            font-weight: bold;
+            color: #007bff;
+            margin-left: -8px;
+        }
+
+        .nav {
+            margin-top: 10px;
+        }
+
+        .nav a {
+            margin: 0 15px;
+            font-weight: 500;
+            transition: color 0.3s ease;
+        }
+
+        /* Active animated underline */
+        .nav a.active {
+            position: relative;
+            color: #007bff;
+            font-weight: bold;
+        }
+
+        /* Animated underline effect */
+        .nav a.active::after {
+            content: '';
+            position: absolute;
+            left: 0;
+            bottom: -5px;
+            width: 100%;
+            height: 3px;
+            background-color: #007bff;
+            border-radius: 2px;
+            animation: underlineSlide 0.4s ease-in-out;
+        }
+
+        @media (max-width: 768px) {
+            .nav {
+                top: 77px;
+                position: absolute;
+                top: 70px;
+                left: 0;
+                width: 100%;
+                background: white;
+                flex-direction: column;
+                display: none;
+                border-top: 1px solid #eee;
+                z-index: 999;
+                transition: background 0.3s ease;
+            }
+
+            .nav.show {
+                display: flex;
+                background: white;
+                /* Menu background stays white */
+            }
+
+            .nav a {
+                padding: 15px;
+                text-align: center;
+                background: rgb(231, 231, 231);
+                /* Default background for all links */
+                color: #007bff;
+                /* Blue text */
+                /* border-bottom: 1px solid #000000; */
+                border: 1px solid rgb(111, 111, 111);
+                font-weight: 500;
+                border-radius: 12px;
+                margin-top: 2px;
+                transition: background 0.3s ease, color 0.3s ease;
+            }
+
+            .nav a:hover {
+                background: #f0f0f0;
+            }
+
+            .nav a.active {
+                background: #007bff;
+                /* Active: blue background */
+                color: white;
+                /* Active: white text */
+                font-weight: bold;
+            }
+
+            .nav a::after {
+                display: none;
+            }
+        }
+
+
+        .nav a:hover::after {
+            width: 100%;
+        }
+
+
+        .nav a:hover {
+            color: #007bff;
+        }
+
+        /* Main */
+        .main {
+            padding: 40px 0;
+            text-align: center;
+        }
+
+        .hero h2 {
+            font-size: 2rem;
+            margin-bottom: 10px;
+        }
+
+        .hero p {
+            font-size: 1.1rem;
+            color: #555;
+        }
+
+        /* Cards Section */
+        .cards-section {
+            margin-top: 40px;
+        }
+
+        .card-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+            gap: 20px;
+            padding: 20px;
+        }
+
+        .card {
+            background: white;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.06);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            cursor: pointer;
+        }
+
+        .card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 12px 24px rgba(0, 0, 0, 0.15);
+        }
+
+        /* Footer */
+        .footer {
+            background: #c4f7ff;
+            text-align: center;
+            padding: 20px 0;
+            border-top: 1px solid #eee;
+            margin-top: 50px;
+            font-size: 18px;
+            color: #777;
+        }
+
+        /* Responsive nav - optional */
+        @media (min-width: 768px) {
+            .container {
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
+            }
+
+            .nav {
+                margin-top: 0;
+                font-size: 20px;
+            }
+        }
+
+        /* Hamburger styles */
+        .hamburger {
+            width: 30px;
+            height: 25px;
+            display: none;
+            flex-direction: column;
+            justify-content: space-between;
+            cursor: pointer;
+            z-index: 1001;
+        }
+
+        .hamburger span {
+            display: block;
+            height: 4px;
+            width: 100%;
+            background: #007bff;
+            border-radius: 4px;
+            transition: all 0.4s ease;
+        }
+
+        /* Active hamburger transforms */
+        .hamburger.active span:nth-child(1) {
+            transform: rotate(45deg) translateY(10px);
+        }
+
+        .hamburger.active span:nth-child(2) {
+            opacity: 0;
+        }
+
+        .hamburger.active span:nth-child(3) {
+            transform: rotate(-45deg) translateY(-10px);
+        }
+
+        /* Responsive Nav */
+        @media (max-width: 768px) {
+            .nav {
+                position: absolute;
+                top: 70px;
+                left: 0;
+                width: 100%;
+                background: white;
+                flex-direction: column;
+                display: none;
+                border-top: 1px solid #eee;
+
+            }
+
+            .nav.show {
+                display: flex;
+                animation: slideDown 0.3s ease forwards;
+            }
+
+            .nav a {
+                padding: 15px;
+                text-align: center;
+                border-bottom: 1px solid #f1f1f1;
+            }
+
+            .hamburger {
+                display: flex;
+            }
+
+            @keyframes slideDown {
+                from {
+                    opacity: 0;
+                    transform: translateY(-10px);
+                }
+
+                to {
+                    opacity: 1;
+                    transform: translateY(0);
+                }
+            }
+        }
+
+        /* Ensure the container uses flex layout */
+        .container {
+            width: 90%;
+            max-width: 1100px;
+            margin: auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        /* New wrapper to hold nav + hamburger on the right */
+        .right-menu {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+        }
+
+        /* Optional tweak for nav items spacing */
+        .nav a {
+            margin: 0 10px;
+        }
+
+        .footer {
+            background: #fff;
+            padding: 40px 20px 10px;
+            border-top: 1px solid #eee;
+            margin-top: 60px;
+            font-size: 14px;
+            color: #444;
+        }
+
+        .footer-content {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 30px;
+            justify-content: space-between;
+        }
+
+        .footer-box {
+            flex: 1 1 158px;
+        }
+
+        .footer-box h3,
+        .footer-box h4 {
+            color: #007bff;
+            margin-bottom: 15px;
+        }
+
+        .footer-box p,
+        .footer-box ul li {
+            margin-bottom: 10px;
+            color: #555;
+        }
+
+        .footer-box ul {
+            list-style: none;
+            padding: 0;
+        }
+
+        .footer-box ul li a {
+            color: #007bff;
+            text-decoration: none;
+            transition: 0.3s;
+        }
+
+        .footer-box ul li a:hover {
+            text-decoration: underline;
+        }
+
+        .footer-bottom {
+            text-align: center;
+            margin-top: 30px;
+            font-size: 13px;
+            color: #777;
+            border-top: 1px solid #eee;
+            padding-top: 15px;
+        }
+
+        /* Responsive Footer */
+        @media (max-width: 768px) {
+            .footer-content {
+                flex-direction: column;
+                text-align: center;
+            }
+
+            .footer-box {
+                margin-bottom: -11px;
+            }
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: #f9f9f9;
+            color: #333;
+            line-height: 1.6;
+        }
+
+        /* RD Calculator Section */
+        .rd-calculator {
+            margin-top: 50px;
+            background-color: #f9f9f9;
+        }
+
+        .rd-calculator h1 {
+            text-align: center;
+            margin-bottom: 10px;
+            color: #333;
+        }
+
+        .rd-calculator p {
+            text-align: center;
+            max-width: 700px;
+            margin: auto;
+            color: #555;
+            margin-bottom: 20px;
+        }
+
+        .rd-calculator .emi-calculator {
+            max-width: 900px;
+            margin: 30px auto;
+            background: white;
+            padding: 20px;
+            border-radius: 12px;
+            box-shadow: 0 0 12px rgba(0, 0, 0, 0.06);
+        }
+
+        .rd-calculator .calculator-section {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 20px;
+            justify-content: space-between;
+        }
+
+        .rd-calculator .form-section {
+            flex: 1;
+            min-width: 280px;
+        }
+
+        .rd-calculator .form-group {
+            margin-bottom: 15px;
+        }
+
+        .rd-calculator label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: 600;
+            color: #444;
+        }
+
+        .rd-calculator input[type="number"],
+        .rd-calculator input[type="text"] {
+            width: 100%;
+            padding: 8px;
+            border: 1px solid #ccc;
+            border-radius: 6px;
+        }
+
+        .rd-calculator input[readonly] {
+            background-color: #f2f2f2;
+            color: #555;
+        }
+
+        .rd-calculator .emi-box {
+            background: #f2f2f2;
+            padding: 20px;
+            border-radius: 12px;
+            text-align: left;
+            flex: 1;
+            min-width: 280px;
+        }
+
+        .rd-calculator .emi-box h3 {
+            color: #c2185b;
+            font-size: 20px;
+            margin-bottom: 10px;
+        }
+
+        .rd-calculator .emi-box p {
+            font-size: 16px;
+            color: #333;
+            margin: 8px 0;
+        }
+
+        .rd-calculator .form-section label input[type="radio"] {
+            margin-right: 6px;
+        }
+
+        @media (max-width: 600px) {
+            .rd-calculator .calculator-section {
+                flex-direction: column;
+            }
+        }
+
+        .rd-calculator select,
+        .rd-calculator input[type="date"] {
+            width: 100%;
+            padding: 8px;
+            border: 1px solid #ccc;
+            border-radius: 6px;
+            background-color: #fff;
+            color: #333;
+        }
+
+        .info-section, .disclaimer-section {
+  max-width: 900px;
+  margin: 40px auto;
+  background: #ffffff;
+  padding: 25px;
+  border-radius: 12px;
+  box-shadow: 0 0 10px rgba(0,0,0,0.05);
+}
+
+.info-section h2, .disclaimer-section h2 {
+  color: #c2185b;
+  margin-bottom: 15px;
+}
+
+.info-section p, .disclaimer-section p {
+  font-size: 16px;
+  color: #444;
+  margin-bottom: 10px;
+}
+
+.info-section ul {
+  list-style-type: disc;
+  margin-left: 20px;
+  color: #333;
+  padding-left: 20px;
+}
+
+.info-section ul li {
+  margin-bottom: 8px;
+}
+
+    </STYle>
+</head>
+
+<body>
+
+    <header class="header">
+        <div class="container">
+            <h1 class="logo">💡Calculator Hub</h1>
+
+            <!-- Add this wrapper div to align nav + hamburger right -->
+            <div class="right-menu">
+                <nav class="nav" id="navbar">
+                    <a href="INDEX.HTML" class="active">Home</a>
+                    <a href="terms.html">Terms</a>
+                    <a href="about.html">About</a>
+                    <a href="contact.html">Contact</a>
+                </nav>
+
+                <!-- Hamburger Button -->
+                <div class="hamburger" id="hamburger">
+                    <span></span>
+                    <span></span>
+                    <span></span>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <section class="rd-calculator">
+        <h1>RD Calculator</h1>
+        <p>
+            Don’t want to invest in lump sum? You can invest a fixed amount monthly and earn secure returns with a
+            Recurring Deposit (RD). Use this calculator to estimate the maturity amount based on your monthly deposit,
+            interest rate, and tenure.
+        </p>
+
+        <div class="emi-calculator">
+            <div class="calculator-section">
+                <div class="form-section">
+                    <div class="form-group">
+                        <label for="customerType">Type of Customer</label>
+                        <select id="customerType" onchange="updateInterest()">
+                            <option value="normal">Normal</option>
+                            <option value="senior">Senior Citizen</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="rdAmount">Monthly Installment (₹)</label>
+                        <input type="number" id="rdAmount" value="500" min="100" max="1000000"
+                            onchange="calculateRD()" />
+                    </div>
+
+                    <div class="form-group">
+                        <label>Tenure</label>
+                        <div style="display:flex; gap:10px;">
+                            <input type="number" id="rdYears" placeholder="YY" min="0" value="0"
+                                onchange="calculateRD()" style="flex:1;">
+                            <input type="number" id="rdMonths" placeholder="MM" min="1" max="120" value="6"
+                                onchange="calculateRD()" style="flex:1;">
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Rate of Interest (%)</label>
+                        <input type="text" id="rdRate" readonly value="5.5" />
+                    </div>
+
+                    <div class="form-group">
+                        <label>Maturity Date</label>
+                        <input type="date" id="rdMaturityDate" readonly />
+                    </div>
+
+                </div>
+
+                <div class="emi-box">
+                    <h3>RD Maturity Details</h3>
+                    <p><strong>Maturity Value:</strong> <span id="rdMaturityValue">₹3,048</span></p>
+                    <p><strong>Aggregate Interest Amount:</strong> <span id="rdInterestEarned">₹48</span></p>
+                    <p><strong>Total Amount Deposited:</strong> <span id="rdTotalDeposited">₹3,000</span></p>
+                    <p><strong>Monthly Deposit:</strong> <span id="rdMonthlyDeposit">₹500</span></p>
+                    <p><strong>Number of Installments:</strong> <span id="rdInstallments">6</span></p>
+                    <p><strong>Effective Annual Yield:</strong> <span id="rdYield">5.64%</span></p>
+                    <p><strong>Interest Type:</strong> Fixed (Quarterly Compounding)</p>
+                    <hr />
+                    <p style="font-size: 14px; color: #777;"><em>Note: Pre-closure may result in reduced interest
+                            payout. Please verify with your bank before early withdrawal.</em></p>
+                </div>
+
+
+            </div>
+
+        </div>
+    </section>
+
+     <section class="info-section">
+                <h2>Use of Calculator</h2>
+                <p>
+                    The RD Calculator is a helpful tool to estimate your future savings from a Recurring Deposit.
+                    It calculates the maturity amount based on your monthly investment, interest rate, and duration.
+                    You can use it to:
+                </p>
+                <ul>
+                    <li>Compare RD plans with different tenures</li>
+                    <li>Estimate interest earned over time</li>
+                    <li>Plan your savings goals in advance</li>
+                    <li>Choose between Normal and Senior Citizen interest rates</li>
+                </ul>
+                <p>
+                    Adjust the values and instantly see how changes affect your total maturity amount.
+                </p>
+            </section>
+
+            <section class="disclaimer-section">
+                <h2>Disclaimer</h2>
+                <p>
+                    This calculator provides approximate figures for informational purposes only.
+                    The actual maturity amount may vary based on your bank's compounding method, applicable TDS,
+                    and other financial terms.
+                </p>
+                <p>
+                    Smart Calculator Hub is not responsible for any financial decisions made based on the calculator's
+                    results.
+                    Please consult your bank or financial advisor before making commitments.
+                </p>
+            </section>
+
+
+    <footer class="footer">
+        <div class="container footer-content">
+            <div class="footer-box">
+                <h3>Smart Calculator Hub</h3>
+                <p>Helping you make smarter financial decisions with quick and easy-to-use calculators.</p>
+                <p>Designed By Debananda Kuanr</p>
+            </div>
+
+            <div class="footer-box">
+                <h4>Quick Links</h4>
+                <ul>
+                    <li><a href="INDEX.HTML">Home</a></li>
+                    <li><a href="terms.html">Terms</a></li>
+                    <li><a href="about.html">About</a></li>
+                    <li><a href="contact.html">Contact</a></li>
+                </ul>
+            </div>
+
+            <div class="footer-box">
+                <h4>Contact Us</h4>
+                <ul>
+                    <li>Email: <a
+                            href="mailto:debanandakuanr453@gmail.com?subject=Hello&body=I%20wanted%20to%20reach%20out%20to%20you.">calculatorsupport@gmail.com</a>
+                    </li>
+                    <li>Phone:<a
+                            href="sms:9439204006?body=Hello%2C%20I%20wanted%20to%20contact%20you.">+91-9568-257-874</a>
+                    </li>
+                    <li>Location: Odisha, India</li>
+                </ul>
+            </div>
+        </div>
+
+        <div class="footer-bottom">
+            <p>&copy; 2025 Smart Calculator Hub. All rights reserved.</p>
+        </div>
+    </footer>
+
+    <script>
+        const hamburger = document.getElementById("hamburger");
+        const navbar = document.getElementById("navbar");
+
+        hamburger.addEventListener("click", () => {
+            hamburger.classList.toggle("active");
+            navbar.classList.toggle("show");
+        });
+    </script>
+    <script>
+        function updateInterest() {
+            const customerType = document.getElementById("customerType").value;
+            const rate = customerType === 'senior' ? 6.0 : 5.5;
+            document.getElementById("rdRate").value = rate.toFixed(2);
+            calculateRD();
+        }
+
+        function calculateRD() {
+            const P = parseFloat(document.getElementById("rdAmount").value);
+            const years = parseInt(document.getElementById("rdYears").value);
+            const months = parseInt(document.getElementById("rdMonths").value);
+            const totalMonths = (years * 12) + months;
+            const rate = parseFloat(document.getElementById("rdRate").value);
+            const r = rate / 400; // quarterly compounding (rate / 4 / 100)
+
+            if (!P || !totalMonths || totalMonths <= 0) return;
+
+            // RD Maturity Calculation Formula (quarterly compounding)
+            const maturityAmount = P * ((Math.pow(1 + r, totalMonths) - 1) / (1 - Math.pow(1 + r, -1)));
+            const totalDeposit = P * totalMonths;
+            const interest = maturityAmount - totalDeposit;
+
+            // DOM Updates
+            document.getElementById("rdMaturityValue").textContent = '₹' + Math.round(maturityAmount).toLocaleString('en-IN');
+            document.getElementById("rdInterestEarned").textContent = '₹' + Math.round(interest).toLocaleString('en-IN');
+            document.getElementById("rdMonthlyDeposit").textContent = '₹' + Math.round(P).toLocaleString('en-IN');
+            document.getElementById("rdTotalDeposited").textContent = '₹' + Math.round(totalDeposit).toLocaleString('en-IN');
+            document.getElementById("rdInstallments").textContent = totalMonths;
+
+            // Approximate Effective Annual Yield (compounded quarterly)
+            const effectiveRate = (Math.pow(1 + r, 4) - 1) * 100;
+            document.getElementById("rdYield").textContent = effectiveRate.toFixed(2) + '%';
+
+            // Set Maturity Date (input type="date")
+            const today = new Date();
+            today.setMonth(today.getMonth() + totalMonths);
+            const formatted = today.toISOString().split("T")[0]; // yyyy-mm-dd format
+            document.getElementById("rdMaturityDate").value = formatted;
+        }
+
+        // Auto-run when page loads
+        window.addEventListener("load", () => {
+            updateInterest();
+        });
+    </script>
+
+
+</body>
+
+</html>
